@@ -5,15 +5,10 @@ import kotlin.math.log
 
 sealed interface HomePartialState: PartialState<HomeState> {
 
-//    class ChangeNumber(private val num: Int) : HomePartialState {
-//        override fun reduce(oldState: HomeState): HomeState {
-//            return oldState.copy(currNumber = num)
-//        }
-//    }
 
-    class ChangeSavedCredentials(private val login: String, private val password: String) : HomePartialState {
+    class SavedCredentials(private val login: String, private val password: String, private val pin: String) : HomePartialState {
         override fun reduce(oldState: HomeState): HomeState {
-            return oldState.copy(login = login, password = password)
+            return oldState.copy(login = login, password = password, pin = pin)
         }
     }
 

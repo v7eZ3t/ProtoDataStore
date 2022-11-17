@@ -1,8 +1,12 @@
 package com.example.protodatastore
 
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.protodatastore.repository.CounterRepository
 import com.example.protodatastore.repository.LoginRepository
 import com.tomcz.ellipse.Processor
 import com.tomcz.ellipse.common.processor
@@ -22,13 +26,13 @@ class HomeViewModel @Inject constructor(
 
     val processor: HomeProcessor = processor(
         initialState = HomeState(),
+        prepare = { repository.observeLastCredentials().map { HomePartialState.SavedCredentials(it.login, it.password, it.pin) }},
         onEvent = { event ->
             when (event) {
                 is HomeEvents.Login -> {
-                    repository.saveCredentials(event.login, event.password).toNoAction()
-                }
-                is HomeEvents.RestoreCredentials -> {
-                    repository.getLastCredentials().first().toNoAction()
+                   // val a = repository.observeLastCredentials().first()
+                   // Log.d("TAG", a.pin + a.login + a.password)
+                    repository.saveCredentials(event.login, event.password, event.pin).toNoAction()
                 }
             }
         })

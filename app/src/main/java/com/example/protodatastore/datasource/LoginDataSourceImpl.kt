@@ -5,37 +5,26 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.protodatastore.Credentials
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.math.log
 
 class LoginDataSourceImpl @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Credentials>
 ) : LoginDataSource {
 
-    companion object PreferencesKeys {
-        val CREDENTIALS = stringPreferencesKey("credentials")
-    }
+    override suspend fun readLastCredentials(): Flow<Credentials> = dataStore.data
 
-
-     suspend fun readLastCredentials2(): Flow<String> {
-        //TODO("Not yet implemented")
-        return flow {  }
-    }
-
-
-     suspend fun saveCredentials2(login: String, password: String) {
-        //TODO("Not yet implemented")
-    }
-
-    override suspend fun readLastCredentials(): Flow<String> = dataStore.data.map {
-        it[CREDENTIALS] ?: ""
-    }
-
-    override suspend fun saveCredentials(login: String, password: String) {
-        dataStore.edit {
-            it[CREDENTIALS] = login
+    override suspend fun saveCredentials(login: String, password: String, pin: String) {
+        dataStore.updateData { currentCredentials ->
+            currentCredentials.toBuilder()
+                .setLogin(login)
+                .setPassword(password)
+                .setPin(pin)
+                .build()
         }
     }
 
@@ -43,6 +32,6 @@ class LoginDataSourceImpl @Inject constructor(
 
 
 interface LoginDataSource {
-    suspend fun readLastCredentials(): Flow<String>
-    suspend fun saveCredentials(login: String, password: String)
+    suspend fun readLastCredentials(): Flow<Credentials>
+    suspend fun saveCredentials(login: String, password: String, pin: String)
 }
